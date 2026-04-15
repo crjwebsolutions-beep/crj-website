@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRJ Web Solutions — Websites That Work as Hard as You Do</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── FLOATING DOTS (behind everything) ───────────── */
+    #dotsCanvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      opacity: 0.18;
+    }
+
+    /* ── GLOBE HERO ───────────────────────────────── */
+    .hero { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; padding: 120px 0 80px; }
+
+    #networkCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.25; }
+
+    /* Globe container — right side */
+    .globe-wrap {
+      position: absolute;
+      right: -80px; top: 50%;
+      transform: translateY(-50%);
+      width: 680px; height: 680px;
+      z-index: 1;
+      pointer-events: none;
+    }
+    #globeCanvas {
+      width: 100%; height: 100%;
+      opacity: 0.72;
+      filter: blur(0.5px);
+    }
+    /* Outer glow ring */
+    .globe-glow {
+      position: absolute; inset: -40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,170,255,0.13) 0%, rgba(0,100,255,0.07) 40%, transparent 70%);
+      animation: globePulse 4s ease-in-out infinite;
+    }
+    @keyframes globePulse {
+      0%,100% { transform: scale(1);   opacity: 0.7; }
+      50%      { transform: scale(1.04); opacity: 1; }
+    }
+
+    /* hero text layer */
+    .hero-content { position: relative; z-index: 3; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    .hero-badge {
+      display: inline-block; font-family: var(--font-display);
+      font-size: 0.68rem; letter-spacing: 3px; color: var(--blue-bright);
+      border: 1px solid var(--border-hot); background: var(--blue-glow2);
+      padding: 6px 16px; border-radius: 4px; margin-bottom: 28px;
+      animation: fadeSlideUp 0.8s ease both;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-weight: 900;
+      line-height: 1.05; margin-bottom: 28px;
+      max-width: 680px;
+    }
+    .hero-title .line-1 {
+      display: block; font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--text-muted); animation: fadeSlideUp 0.8s 0.1s ease both;
+    }
+    .hero-title .line-2 {
+      display: block; font-size: clamp(2.8rem, 6.5vw, 5rem);
+      color: var(--text-white); animation: fadeSlideUp 0.8s 0.2s ease both;
+    }
+    .hero-title .line-3 {
+      display: block; font-size: clamp(2.8rem, 6.5vw, 5rem);
+      color: var(--blue); text-shadow: 0 0 60px rgba(0,170,255,0.5);
+      animation: fadeSlideUp 0.8s 0.3s ease both;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--text-muted);
+      max-width: 500px; margin-bottom: 40px; line-height: 1.75;
+      animation: fadeSlideUp 0.8s 0.4s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px;
+      animation: fadeSlideUp 0.8s 0.5s ease both;
+    }
+    .hero-stats { display: flex; align-items: center; gap: 24px; animation: fadeSlideUp 0.8s 0.6s ease both; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--blue); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; }
+    .stat-divider { width: 1px; height: 40px; background: var(--border-hot); opacity: 0.5; }
+
+    /* hero orbs */
+    .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 1; }
+    .orb-1 { width: 500px; height: 500px; background: rgba(0,100,255,0.10); top: -100px; right: -100px; animation: orbFloat 8s ease-in-out infinite; }
+    .orb-2 { width: 300px; height: 300px; background: rgba(0,170,255,0.06); bottom: 50px; right: 300px; animation: orbFloat 12s 2s ease-in-out infinite reverse; }
+
+    .scroll-indicator { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 2; }
+    .scroll-dot { width: 6px; height: 6px; background: var(--blue); border-radius: 50%; animation: scrollBounce 2s ease-in-out infinite; box-shadow: 0 0 10px var(--blue); }
+
+    @media (max-width: 900px) {
+      .globe-wrap { width: 420px; height: 420px; right: -140px; opacity: 0.4; }
+    }
+    @media (max-width: 600px) {
+      .globe-wrap { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating dots — z-index 0, pointer-events none, will not block anything -->
+  <canvas id="dotsCanvas"></canvas>
+
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/how-it-works">How It Works</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="hero" id="hero">
+    <canvas id="networkCanvas"></canvas>
+
+    <!-- Animated Globe -->
+    <div class="globe-wrap">
+      <div class="globe-glow"></div>
+      <canvas id="globeCanvas"></canvas>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">⚡ CUSTOM WEBSITES · REAL RESULTS</div>
+      <h1 class="hero-title">
+        <span class="line-1">Your Business Deserves</span>
+        <span class="line-2">A Working</span>
+        <span class="line-3">Website.</span>
+      </h1>
+      <p class="hero-sub">
+        CRJ builds sites engineered to attract customers, earn trust, and grow your revenue from day one.
+      </p>
+      <div class="hero-actions">
+        <a href="/contact" class="btn-primary">Get My Website Built →</a>
+        <a href="/pricing" class="btn-ghost">See Pricing</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Custom Built</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">2–4 wk</span><span class="stat-label">Avg. Delivery</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">Ongoing Support</span></div>
+      </div>
+    </div>
+
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="scroll-indicator"><div class="scroll-dot"></div></div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <script>
+  /* ── FLOATING DOTS BACKGROUND ──────────────────────────────────────────── */
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    const COUNT = 70;
+    const dots = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.6,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      a: Math.random(),
+      aSpeed: Math.random() * 0.006 + 0.002,
+    }));
+    const LINE_DIST = 140;
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(d => {
+        d.x += d.vx; d.y += d.vy; d.a += d.aSpeed;
+        if (d.x < 0) d.x = canvas.width;
+        if (d.x > canvas.width) d.x = 0;
+        if (d.y < 0) d.y = canvas.height;
+        if (d.y > canvas.height) d.y = 0;
+        const alpha = (Math.sin(d.a) + 1) / 2 * 0.7 + 0.15;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,170,255,${alpha.toFixed(2)})`;
+        ctx.fill();
+      });
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dx = dots[i].x - dots[j].x;
+          const dy = dots[i].y - dots[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < LINE_DIST) {
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = `rgba(0,170,255,${((1 - dist / LINE_DIST) * 0.25).toFixed(2)})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── GLOBE CANVAS ───────────────────────────────────────────────────── */
+  (function() {
+    const canvas = document.getElementById('globeCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W = 680, H = 680;
+    canvas.width = W; canvas.height = H;
+
+    const cx = W / 2, cy = H / 2;
+    const R = W * 0.42;
+    let angle = 0;
+
+    const continentDots = [];
+    const landMasses = [
+      ...genRegion(-130,-60, 25,70, 0.38),
+      ...genRegion(-82,-34, -55,12, 0.35),
+      ...genRegion(-10,40, 35,70, 0.45),
+      ...genRegion(-18,52, -35,37, 0.32),
+      ...genRegion(40,145, 10,75, 0.28),
+      ...genRegion(113,154, -38,-15, 0.4),
+    ];
+    continentDots.push(...landMasses);
+
+    function genRegion(lon1, lon2, lat1, lat2, density) {
+      const pts = [];
+      const steps = Math.round(Math.abs(lon2-lon1) * Math.abs(lat2-lat1) * density * 0.03);
+      for (let i = 0; i < steps; i++) {
+        pts.push({ lon: lon1 + Math.random() * (lon2-lon1), lat: lat1 + Math.random() * (lat2-lat1) });
+      }
+      return pts;
+    }
+
+    function project(lat, lon, rotY) {
+      const phi  = (90 - lat) * Math.PI / 180;
+      const theta = (lon + rotY) * Math.PI / 180;
+      const x3 = R * Math.sin(phi) * Math.cos(theta);
+      const y3 = -R * Math.cos(phi);
+      const z3 = R * Math.sin(phi) * Math.sin(theta);
+      return { x: cx + x3, y: cy + y3, z: z3 };
+    }
+
+    const latLines = [];
+    for (let lat = -75; lat <= 75; lat += 15) latLines.push(lat);
+    const lonLines = [];
+    for (let lon = 0; lon < 360; lon += 20) lonLines.push(lon);
+
+    const connections = [];
+    const sample = continentDots.filter(() => Math.random() < 0.25);
+    for (let i = 0; i < sample.length; i++) {
+      for (let j = i+1; j < sample.length; j++) {
+        const dlat = sample[i].lat - sample[j].lat;
+        const dlon = sample[i].lon - sample[j].lon;
+        if (Math.sqrt(dlat*dlat + dlon*dlon) < 22) connections.push([sample[i], sample[j]]);
+      }
+    }
+
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, W, H);
+      const rot = angle * (180 / Math.PI);
+
+      const grad = ctx.createRadialGradient(cx - R*0.25, cy - R*0.2, R*0.1, cx, cy, R);
+      grad.addColorStop(0,   'rgba(0,160,255,0.10)');
+      grad.addColorStop(0.5, 'rgba(0,80,200,0.06)');
+      grad.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.fillStyle = grad; ctx.fill();
+
+      latLines.forEach(lat => {
+        ctx.beginPath(); let first = true;
+        for (let lon = 0; lon <= 360; lon += 4) {
+          const p = project(lat, lon, rot);
+          if (p.z > 0) { first ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); first = false; } else { first = true; }
+        }
+        ctx.strokeStyle = 'rgba(0,170,255,0.09)'; ctx.lineWidth = 0.5; ctx.stroke();
+      });
+
+      lonLines.forEach(lon => {
+        ctx.beginPath(); let first = true;
+        for (let lat = -90; lat <= 90; lat += 4) {
+          const p = project(lat, lon, rot);
+          if (p.z > 0) { first ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); first = false; } else { first = true; }
+        }
+        ctx.strokeStyle = 'rgba(0,170,255,0.07)'; ctx.lineWidth = 0.5; ctx.stroke();
+      });
+
+      connections.forEach(([a, b]) => {
+        const pa = project(a.lat, a.lon, rot);
+        const pb = project(b.lat, b.lon, rot);
+        if (pa.z > 0 && pb.z > 0) {
+          const alpha = Math.min(pa.z, pb.z) / R * 0.4;
+          ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+          ctx.strokeStyle = `rgba(0,200,255,${alpha.toFixed(2)})`; ctx.lineWidth = 0.6; ctx.stroke();
+        }
+      });
+
+      continentDots.forEach(d => {
+        const p = project(d.lat, d.lon, rot);
+        if (p.z < 0) return;
+        const brightness = (p.z / R);
+        const size = 1.2 + brightness * 1.4;
+        const alpha = 0.3 + brightness * 0.7;
+        ctx.beginPath(); ctx.arc(p.x, p.y, size, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(0,200,255,${alpha.toFixed(2)})`; ctx.fill();
+        if (brightness > 0.7) {
+          ctx.beginPath(); ctx.arc(p.x, p.y, size + 2, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(0,170,255,${(brightness * 0.2).toFixed(2)})`; ctx.fill();
+        }
+      });
+
+      const ringGrad = ctx.createRadialGradient(cx, cy, R*0.88, cx, cy, R*1.02);
+      ringGrad.addColorStop(0,   'rgba(0,170,255,0)');
+      ringGrad.addColorStop(0.7, 'rgba(0,170,255,0.12)');
+      ringGrad.addColorStop(1,   'rgba(0,170,255,0)');
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2);
+      ctx.strokeStyle = ringGrad; ctx.lineWidth = 12; ctx.stroke();
+
+      angle += 0.0025;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+  </script>
+</body>
+</html>

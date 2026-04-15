@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Get Started — CRJ Web Solutions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Floating dots canvas (decorative, non-blocking) ── */
+    #dotsCanvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      opacity: 0.18;
+    }
+
+    .page-hero { padding: 160px 0 60px; position: relative; overflow: hidden; z-index: 1; }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,170,255,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .contact-page { padding: 40px 0 80px; position: relative; z-index: 1; }
+    .contact-layout { display: grid; grid-template-columns: 1fr 1.7fr; gap: 64px; align-items: start; margin-top: 40px; }
+
+    /* Left info panel */
+    .contact-info { display: flex; flex-direction: column; gap: 16px; }
+    .info-block { display: flex; align-items: flex-start; gap: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: border-color 0.3s; }
+    .info-block:hover { border-color: var(--border-hot); }
+    .info-icon { font-size: 1.4rem; }
+    .info-label { font-size: 0.72rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+    .info-value { font-size: 0.95rem; color: var(--text-white); font-weight: 500; }
+    .contact-promise { display: flex; gap: 14px; align-items: flex-start; background: var(--blue-glow2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .promise-icon { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: #000; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .contact-promise p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Form */
+    .contact-form-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .form-group label { font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text-white); padding: 12px 16px;
+      font-size: 0.95rem; transition: all 0.3s ease; outline: none; appearance: none;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-dim); }
+    .form-group select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300aaff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-group select option { background: #0a1120; color: var(--text-white); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--blue); background: rgba(0,170,255,0.05); box-shadow: 0 0 0 3px rgba(0,170,255,0.1); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-section-label {
+      font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 3px;
+      color: var(--blue); text-transform: uppercase; margin: 8px 0 16px;
+      padding-top: 8px; border-top: 1px solid var(--border);
+    }
+    .btn-submit {
+      width: 100%; padding: 15px; background: var(--blue); color: #000;
+      font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; border: none;
+      border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+      box-shadow: 0 0 24px rgba(0,170,255,0.4);
+    }
+    .btn-submit:hover { background: var(--blue-bright); box-shadow: 0 0 40px rgba(0,170,255,0.6); transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Success banner */
+    .form-success {
+      display: none; text-align: center; padding: 28px 24px;
+      background: rgba(0,170,255,0.07); border: 1px solid rgba(0,170,255,0.3);
+      border-radius: 10px; margin-top: 20px;
+    }
+    .form-success.visible { display: block; }
+    .form-success h3 { font-family: var(--font-display); font-size: 1rem; color: var(--blue-bright); margin-bottom: 8px; }
+    .form-success p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* Error banner */
+    .form-error {
+      display: none; text-align: center; padding: 16px 20px;
+      background: rgba(255,60,60,0.07); border: 1px solid rgba(255,60,60,0.3);
+      border-radius: 8px; margin-top: 12px; font-size: 0.88rem; color: #ff6b6b;
+    }
+    .form-error.visible { display: block; }
+
+    /* Deposit section */
+    .deposit-section {
+      margin-top: 80px; padding: 56px 48px; text-align: center;
+      background: linear-gradient(135deg, #080f20, #0a1830);
+      border: 1px solid rgba(0,170,255,0.3); border-radius: var(--radius-lg);
+      position: relative; overflow: hidden; z-index: 1;
+    }
+    .deposit-section::before {
+      content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 300px;
+      background: radial-gradient(circle, rgba(0,170,255,0.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .deposit-section h2 { font-family: var(--font-display); font-size: 1.6rem; color: var(--text-white); margin-bottom: 16px; }
+    .deposit-section h2 em { font-style: normal; color: var(--blue); }
+    .deposit-section p { color: var(--text-muted); font-size: 0.96rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.75; }
+    .btn-deposit {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--blue); color: #000; font-weight: 700;
+      padding: 16px 36px; border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 32px rgba(0,170,255,0.5);
+      font-family: var(--font-display); font-size: 0.82rem; letter-spacing: 1px;
+      text-transform: uppercase;
+      /* ensure it's always clickable above decorative layers */
+      position: relative; z-index: 2;
+    }
+    .btn-deposit:hover { background: var(--blue-bright); box-shadow: 0 0 50px rgba(0,170,255,0.7); transform: translateY(-2px); }
+    .deposit-note { margin-top: 14px; font-size: 0.82rem; color: var(--text-dim); }
+
+    @media (max-width: 900px) { .contact-layout { grid-template-columns: 1fr; gap: 32px; } .form-row { grid-template-columns: 1fr; } .contact-form-wrap { padding: 24px; } .deposit-section { padding: 36px 24px; } }
+  </style>
+</head>
+<body>
+  <!-- Floating dots background — pointer-events: none so nothing blocks clicks -->
+  <canvas id="dotsCanvas"></canvas>
+
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/how-it-works">How It Works</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta" style="color:var(--blue-bright)">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <div class="section-label">Let's Talk</div>
+      <h1 class="section-title">Get Your Website<br><em>Built Today</em></h1>
+      <p class="section-sub">No sales pressure — just a real conversation about your business.</p>
+    </div>
+  </section>
+
+  <section class="contact-page">
+    <div class="section-inner">
+      <div class="contact-layout">
+
+        <!-- Left Info -->
+        <div class="contact-info">
+          <div class="info-block">
+            <div class="info-icon">📧</div>
+            <div>
+              <div class="info-label">Email</div>
+              <div class="info-value">crjwebsolutions@gmail.com</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-icon">⏱</div>
+            <div>
+              <div class="info-label">Response Time</div>
+              <div class="info-value">Within 24 hours</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-icon">📍</div>
+            <div>
+              <div class="info-label">Location</div>
+              <div class="info-value">Austin, TX. Working with clients nationwide.</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-icon">🗓</div>
+            <div>
+              <div class="info-label">Availability</div>
+              <div class="info-value">Currently taking new clients</div>
+            </div>
+          </div>
+          <div class="contact-promise">
+            <div class="promise-icon">✓</div>
+            <p>Every inquiry gets a personal response. I'll review your project and give you honest advice on what it'll take and what it'll cost.</p>
+          </div>
+        </div>
+
+        <!-- Right Form -->
+        <div class="contact-form-wrap">
+          <form id="contactForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Jane Smith" required/>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="jane@yourbiz.com" required/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Phone (optional)</label>
+                <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000"/>
+              </div>
+              <div class="form-group">
+                <label for="business">Business Name</label>
+                <input type="text" id="business" name="business" placeholder="Your Business LLC"/>
+              </div>
+            </div>
+
+            <div class="form-section-label">Project Details</div>
+
+            <div class="form-group">
+              <label for="website_type">Website Type</label>
+              <select id="website_type" name="website_type" required>
+                <option value="" disabled selected>Select one...</option>
+                <option value="business-website">Business Website</option>
+                <option value="redesign">Redesign</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="main_goal">Main Goal</label>
+              <input type="text" id="main_goal" name="main_goal" placeholder="Get more customers, book appointments, grow my business..."/>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="existing_site">Existing Website?</label>
+                <select id="existing_site" name="existing_site">
+                  <option value="" disabled selected>Select one...</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="branding">Branding</label>
+                <select id="branding" name="branding">
+                  <option value="" disabled selected>Select one...</option>
+                  <option value="ready">Logo and colors ready</option>
+                  <option value="some">Some ideas</option>
+                  <option value="help">Need help</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="timeline">Timeline</label>
+              <select id="timeline" name="timeline">
+                <option value="" disabled selected>Select one...</option>
+                <option value="asap">ASAP</option>
+                <option value="2-4weeks">2 to 4 weeks</option>
+                <option value="flexible">Flexible</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Project Details</label>
+              <textarea id="message" name="message" placeholder="Tell me about your business. What does it do? Who are your customers? Anything specific you want on the site?" required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Send My Request →</button>
+
+            <!-- Success / Error feedback shown after submit -->
+            <div class="form-success" id="formSuccess">
+              <h3>✅ Request Sent!</h3>
+              <p>Thanks! I received your message and will get back to you within 24 hours.</p>
+            </div>
+            <div class="form-error" id="formError">
+              Something went wrong. Please try again or email me directly at crjwebsolutions@gmail.com
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Deposit Section — opens Google Form in a new tab -->
+      <div class="deposit-section">
+        <h2>Ready to Get <em>Started Now?</em></h2>
+        <p>If you're ready to move forward, fill out my project intake form and I'll follow up personally to kick things off.</p>
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLScqVr1HIDCTT_0EZHtyCNOGd3fyJKqbtZB69oXrP06QijVWZQ/viewform?usp=header"
+          class="btn-deposit"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ⚡ Pay Deposit &amp; Get Started
+        </a>
+        <p class="deposit-note">Secure payment via Stripe. 50% deposit to reserve your spot. Balance due at delivery.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <script>
+  /* ══════════════════════════════════════════════════════
+     FLOATING DOTS BACKGROUND
+  ══════════════════════════════════════════════════════ */
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const COUNT = 70;
+    const dots = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.6,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      a: Math.random(),
+      aSpeed: Math.random() * 0.006 + 0.002,
+    }));
+
+    const LINE_DIST = 140;
+
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      dots.forEach(d => {
+        d.x += d.vx; d.y += d.vy; d.a += d.aSpeed;
+        if (d.x < 0) d.x = canvas.width;
+        if (d.x > canvas.width) d.x = 0;
+        if (d.y < 0) d.y = canvas.height;
+        if (d.y > canvas.height) d.y = 0;
+        const alpha = (Math.sin(d.a) + 1) / 2 * 0.7 + 0.15;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,170,255,${alpha.toFixed(2)})`;
+        ctx.fill();
+      });
+
+      // Draw connecting lines between nearby dots
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dx = dots[i].x - dots[j].x;
+          const dy = dots[i].y - dots[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < LINE_DIST) {
+            const lineAlpha = (1 - dist / LINE_DIST) * 0.25;
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = `rgba(0,170,255,${lineAlpha.toFixed(2)})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ══════════════════════════════════════════════════════
+     CONTACT FORM SUBMISSION
+  ══════════════════════════════════════════════════════ */
+  (function () {
+    const form       = document.getElementById('contactForm');
+    const submitBtn  = document.getElementById('submitBtn');
+    const successBox = document.getElementById('formSuccess');
+    const errorBox   = document.getElementById('formError');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      // Basic client-side validation
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const wType   = document.getElementById('website_type').value;
+
+      if (!name || !email || !message || !wType) {
+        errorBox.textContent = 'Please fill in all required fields.';
+        errorBox.classList.add('visible');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      successBox.classList.remove('visible');
+      errorBox.classList.remove('visible');
+
+      const payload = {
+        name:          name,
+        email:         email,
+        phone:         document.getElementById('phone').value.trim(),
+        business:      document.getElementById('business').value.trim(),
+        main_goal:     document.getElementById('main_goal').value.trim(),
+        website_type:  wType,
+        existing_site: document.getElementById('existing_site').value,
+        branding:      document.getElementById('branding').value,
+        timeline:      document.getElementById('timeline').value,
+        message:       message,
+      };
+
+      try {
+        const res  = await fetch('/submit-contact', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          form.reset();
+          successBox.classList.add('visible');
+          submitBtn.textContent = 'Request Sent ✓';
+        } else {
+          throw new Error('Server returned success: false');
+        }
+      } catch (err) {
+        errorBox.textContent = 'Something went wrong. Please try again or email crjwebsolutions@gmail.com';
+        errorBox.classList.add('visible');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send My Request →';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>How It Works — CRJ Web Solutions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* Floating dots — behind everything */
+    #dotsCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.18; }
+    /* Star field stays as originally designed */
+    #starField { position: fixed; top: 0; left: 0; width: 100%; height: 40vh; z-index: 0; pointer-events: none; }
+
+    .page-hero { padding: 160px 0 80px; position: relative; z-index: 1; overflow: hidden; }
+    .hiw-page-steps { padding: 60px 0 120px; position: relative; z-index: 1; }
+
+    .step-block { display: grid; grid-template-columns: 90px 1fr; gap: 40px; align-items: start; padding: 52px 0; border-bottom: 1px solid var(--border); }
+    .step-block:last-child { border-bottom: none; }
+    .step-block-num { font-family: var(--font-display); font-size: 3.8rem; font-weight: 900; color: var(--blue); opacity: 0.18; line-height: 1; }
+    .step-block-body h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--text-white); margin-bottom: 12px; letter-spacing: 1px; }
+    .step-block-body p { font-size: 0.96rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
+    .step-detail-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .step-detail-list li { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; }
+    .step-detail-list li::before { content: '→'; color: var(--blue); font-size: 0.8rem; }
+
+    .hiw-promise { background: linear-gradient(135deg, #080f20, #0a1830); border: 1px solid rgba(0,170,255,0.25); border-radius: var(--radius-lg); padding: 56px 48px; text-align: center; margin: 0 0 120px; position: relative; overflow: hidden; z-index: 1; }
+    .hiw-promise::before { content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,170,255,0.08) 0%, transparent 70%); pointer-events: none; }
+    .hiw-promise h2 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: var(--text-white); margin-bottom: 16px; }
+    .hiw-promise h2 em { font-style: normal; color: var(--blue); }
+    .hiw-promise p { color: var(--text-muted); font-size: 1rem; max-width: 520px; margin: 0 auto 32px; line-height: 1.75; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    @media (max-width: 600px) { .step-block { grid-template-columns: 1fr; gap: 16px; } .step-block-num { font-size: 2.5rem; } }
+  </style>
+</head>
+<body>
+  <canvas id="dotsCanvas"></canvas>
+  <canvas id="starField"></canvas>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/how-it-works" style="color:var(--blue-bright)">How It Works</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <div class="section-label">The Process</div>
+      <h1 class="section-title">From Idea to <em>Live Website</em></h1>
+      <p class="section-sub">No guessing. No ghosting. Every project follows a clear 5-step process — you always know what's happening and what's next.</p>
+    </div>
+  </section>
+
+  <section class="hiw-page-steps">
+    <div class="section-inner">
+      <div class="step-block">
+        <div class="step-block-num">01</div>
+        <div class="step-block-body">
+          <h3>Discovery Call</h3>
+          <p>We start with a free conversation. I want to understand your business, your customers, what you've tried before, and exactly what you need your website to do. No generic templates. Everything starts with your specific situation.</p>
+          <ul class="step-detail-list">
+            <li>15 to 30 minute call via phone, Zoom, or text</li>
+            <li>We talk about your goals, timeline, and budget</li>
+            <li>You get honest advice on what will actually work</li>
+            <li>Zero commitment required</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-block-num">02</div>
+        <div class="step-block-body">
+          <h3>Design and Planning</h3>
+          <p>Before a single line of code is written, we lock in the design direction. You'll see the color palette, layout plan, and overall look and feel. We make sure you love it before moving forward.</p>
+          <ul class="step-detail-list">
+            <li>Custom design tailored to your brand and industry</li>
+            <li>Review the sitemap with every page planned before build</li>
+            <li>You approve the design direction before we start coding</li>
+            <li>Revisions included at this stage</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-block-num">03</div>
+        <div class="step-block-body">
+          <h3>We Build It</h3>
+          <p>This is where the magic happens. You sit back while I build your fully custom site. Every section is coded specifically for your business. I send progress updates so you always know where things stand.</p>
+          <ul class="step-detail-list">
+            <li>100% custom code. No drag-and-drop page builders.</li>
+            <li>Mobile-first and SEO-ready from day one</li>
+            <li>Progress check-ins throughout the build</li>
+            <li>Fast turnaround. Most sites done in 2 to 4 weeks.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-block-num">04</div>
+        <div class="step-block-body">
+          <h3>You Review and We Refine</h3>
+          <p>When the site is ready, I walk you through every page. You give feedback, request changes, and we fine-tune until it's exactly right. Revisions are part of the deal, not an add-on charge.</p>
+          <ul class="step-detail-list">
+            <li>Full walkthrough of the finished site together</li>
+            <li>Revision rounds included in every package</li>
+            <li>Tested on mobile, tablet, and desktop</li>
+            <li>You sign off before anything goes live</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-block-num">05</div>
+        <div class="step-block-body">
+          <h3>Launch and Ongoing Support</h3>
+          <p>We go live. Your domain is connected, your site is live, and you start showing up where your customers are looking. And if you ever need updates, changes, or new features, CRJ has you covered.</p>
+          <ul class="step-detail-list">
+            <li>Domain and hosting setup handled</li>
+            <li>Google Analytics and Search Console connected</li>
+            <li>Post-launch support included</li>
+            <li>Monthly maintenance plans available for continued updates</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-inner">
+    <div class="hiw-promise">
+      <h2>Ready to Get <em>Started?</em></h2>
+      <p>The first step costs nothing. Reach out today and let's talk about building the website your business deserves.</p>
+      <div class="cta-btns">
+        <a href="/contact" class="btn-primary">Start the Conversation →</a>
+        <a href="/pricing" class="btn-ghost">See Pricing First</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+  /* Floating dots */
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const dots = Array.from({ length: 70 }, () => ({
+      x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
+      r: Math.random()*1.8+0.6, vx: (Math.random()-0.5)*0.35, vy: (Math.random()-0.5)*0.35,
+      a: Math.random(), aSpeed: Math.random()*0.006+0.002,
+    }));
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      dots.forEach(d => {
+        d.x+=d.vx; d.y+=d.vy; d.a+=d.aSpeed;
+        if(d.x<0)d.x=canvas.width; if(d.x>canvas.width)d.x=0;
+        if(d.y<0)d.y=canvas.height; if(d.y>canvas.height)d.y=0;
+        const alpha=(Math.sin(d.a)+1)/2*0.7+0.15;
+        ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,170,255,${alpha.toFixed(2)})`; ctx.fill();
+      });
+      for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++){
+        const dx=dots[i].x-dots[j].x, dy=dots[i].y-dots[j].y, dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){
+          ctx.beginPath(); ctx.moveTo(dots[i].x,dots[i].y); ctx.lineTo(dots[j].x,dots[j].y);
+          ctx.strokeStyle=`rgba(0,170,255,${((1-dist/140)*0.25).toFixed(2)})`; ctx.lineWidth=0.7; ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* Original star field */
+  (function() {
+    const canvas = document.getElementById('starField');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight * 0.4;
+    const stars = Array.from({length: 180}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.1 + 0.2,
+      a: Math.random(),
+      speed: Math.random() * 0.004 + 0.001,
+    }));
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.a += s.speed;
+        const alpha = (Math.sin(s.a) + 1) / 2 * 0.55 + 0.05;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(180,220,255,${alpha.toFixed(2)})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight * 0.4; });
+  })();
+  </script>
+</body>
+</html>

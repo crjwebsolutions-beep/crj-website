@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — CRJ Web Solutions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    #dotsCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.18; }
+
+    .page-hero { padding: 160px 0 80px; position: relative; overflow: hidden; z-index: 1; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(0,170,255,0.10) 0%, transparent 70%); pointer-events: none; }
+    .port-page { padding: 40px 0 120px; position: relative; z-index: 1; }
+    .port-page-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 56px; }
+    .port-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: all 0.4s ease; }
+    .port-card:hover { border-color: var(--border-hot); transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+    .port-img-wrap { position: relative; overflow: hidden; height: 240px; }
+    .port-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; transition: transform 0.55s ease; }
+    .port-card:hover .port-img { transform: scale(1.06); }
+    .port-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,10,30,0.1) 0%, rgba(0,10,30,0.85) 100%); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 24px; opacity: 0; transition: opacity 0.35s ease; pointer-events: none; }
+    .port-card:hover .port-overlay { opacity: 1; pointer-events: auto; }
+    .port-overlay-btn { font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; color: #000; background: var(--blue); padding: 10px 22px; border-radius: 6px; box-shadow: 0 0 20px rgba(0,170,255,0.5); text-transform: uppercase; display: inline-block; transition: all 0.3s ease; }
+    .port-overlay-btn:hover { background: var(--blue-bright); box-shadow: 0 0 30px rgba(0,170,255,0.7); }
+    .port-info { padding: 22px 24px 26px; }
+    .port-tag { font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+    .port-info h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-bottom: 8px; }
+    .port-info p { font-size: 0.87rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 14px; }
+    .port-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+    .port-tech span { font-size: 0.7rem; color: var(--text-dim); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 3px 9px; border-radius: 4px; }
+    .port-cta { margin-top: 48px; text-align: center; padding: 48px; background: linear-gradient(135deg, #080f20, #0a1830); border: 1px solid rgba(0,170,255,0.25); border-radius: var(--radius-lg); }
+    .port-cta h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--text-white); margin-bottom: 12px; }
+    .port-cta h3 em { font-style: normal; color: var(--blue); }
+    .port-cta p { color: var(--text-muted); margin-bottom: 28px; font-size: 0.96rem; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    @media (max-width: 768px) { .port-page-grid { grid-template-columns: 1fr; } .port-img-wrap { height: 220px; } }
+  </style>
+</head>
+<body>
+  <canvas id="dotsCanvas"></canvas>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/how-it-works">How It Works</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/portfolio" style="color:var(--blue-bright)">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <div class="section-label">Our Work</div>
+      <h1 class="section-title">Built for Real <em>Businesses</em></h1>
+      <p class="section-sub">Every site is 100% custom — built around the client's brand, industry, and goals. Here's a look at what CRJ delivers.</p>
+    </div>
+  </section>
+
+  <section class="port-page">
+    <div class="section-inner">
+      <div class="port-page-grid">
+
+        <div class="port-card">
+          <div class="port-img-wrap">
+            <img src="{{ url_for('static', filename='images/portfolio-barber-booking-example.jpeg') }}" alt="Barber Booking App" class="port-img" loading="lazy"/>
+            <div class="port-overlay">
+              <a href="/portfolio/barber-demo" class="port-overlay-btn">View Project</a>
+            </div>
+          </div>
+          <div class="port-info">
+            <div class="port-tag">Booking & Scheduling</div>
+            <h4>Barber Shop Booking App</h4>
+            <p>A sleek dark-theme mobile booking experience for a barbershop. Clients can browse services, select a barber, pick a date and time, and confirm their appointment — all in under a minute.</p>
+            <div class="port-tech"><span>Flask</span><span>Custom CSS</span><span>Booking System</span><span>Mobile-First</span></div>
+          </div>
+        </div>
+
+        <div class="port-card">
+          <div class="port-img-wrap">
+            <img src="{{ url_for('static', filename='images/portfolio-family-photography-example.jpeg') }}" alt="Photography Website" class="port-img" loading="lazy"/>
+            <div class="port-overlay">
+              <a href="/portfolio/photography-demo" class="port-overlay-btn">View Project</a>
+            </div>
+          </div>
+          <div class="port-info">
+            <div class="port-tag">Portfolio / Photography</div>
+            <h4>Family Photography Studio</h4>
+            <p>A clean, airy portfolio site for a family and maternity photographer. Features a full gallery, investment page, testimonials, and a contact form to capture new client inquiries.</p>
+            <div class="port-tech"><span>HTML/CSS</span><span>Gallery Grid</span><span>Contact Form</span><span>SEO Optimized</span></div>
+          </div>
+        </div>
+
+        <div class="port-card">
+          <div class="port-img-wrap">
+            <img src="{{ url_for('static', filename='images/portfolio-law-firm-example.jpeg') }}" alt="Law Firm Website" class="port-img" loading="lazy"/>
+            <div class="port-overlay">
+              <a href="/portfolio/law-demo" class="port-overlay-btn">View Project</a>
+            </div>
+          </div>
+          <div class="port-info">
+            <div class="port-tag">Professional / Law</div>
+            <h4>Law Firm Multi-Device Site</h4>
+            <p>A powerful, trust-building website for a law firm — fully responsive across desktop, tablet, and mobile. Features practice area pages, attorney profiles, client intake forms, and a blog.</p>
+            <div class="port-tech"><span>Responsive Design</span><span>Client Intake</span><span>Multi-Page</span><span>Professional</span></div>
+          </div>
+        </div>
+
+        <div class="port-card">
+          <div class="port-img-wrap">
+            <img src="{{ url_for('static', filename='images/portfolio-photography-example.jpeg') }}" alt="Travel Photography" class="port-img" loading="lazy"/>
+            <div class="port-overlay">
+              <a href="/portfolio/travel-demo" class="port-overlay-btn">View Project</a>
+            </div>
+          </div>
+          <div class="port-info">
+            <div class="port-tag">Portfolio / Creative</div>
+            <h4>Travel & Landscape Photography</h4>
+            <p>A full-bleed, immersive portfolio for a travel photographer. Full-screen image panels, a client showcase section, and a contact page — designed to let the photography speak for itself.</p>
+            <div class="port-tech"><span>Full-Screen Layout</span><span>Image-First Design</span><span>Portfolio</span><span>Client Gallery</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="port-cta">
+        <h3>Your Business Could Be <em>Next</em></h3>
+        <p>Every site above started with a conversation. Let's talk about building yours.</p>
+        <div class="cta-btns">
+          <a href="/contact" class="btn-primary">Start My Project →</a>
+          <a href="/pricing" class="btn-ghost">See Pricing</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const dots = Array.from({ length: 70 }, () => ({
+      x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
+      r: Math.random()*1.8+0.6, vx: (Math.random()-0.5)*0.35, vy: (Math.random()-0.5)*0.35,
+      a: Math.random(), aSpeed: Math.random()*0.006+0.002,
+    }));
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      dots.forEach(d => {
+        d.x+=d.vx; d.y+=d.vy; d.a+=d.aSpeed;
+        if(d.x<0)d.x=canvas.width; if(d.x>canvas.width)d.x=0;
+        if(d.y<0)d.y=canvas.height; if(d.y>canvas.height)d.y=0;
+        const alpha=(Math.sin(d.a)+1)/2*0.7+0.15;
+        ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,170,255,${alpha.toFixed(2)})`; ctx.fill();
+      });
+      for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++){
+        const dx=dots[i].x-dots[j].x, dy=dots[i].y-dots[j].y, dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){
+          ctx.beginPath(); ctx.moveTo(dots[i].x,dots[i].y); ctx.lineTo(dots[j].x,dots[j].y);
+          ctx.strokeStyle=`rgba(0,170,255,${((1-dist/140)*0.25).toFixed(2)})`; ctx.lineWidth=0.7; ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+  </script>
+</body>
+</html>

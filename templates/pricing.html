@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing — CRJ Web Solutions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    #dotsCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.18; }
+
+    .page-hero { padding: 160px 0 80px; position: relative; overflow: hidden; z-index: 1; }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,170,255,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pricing-page { padding: 40px 0 120px; position: relative; z-index: 1; }
+    .pricing-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: start; margin-top: 56px; }
+    .pc { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: all 0.3s ease; }
+    .pc:hover { border-color: var(--border-hot); transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+    .pc-featured { border-color: rgba(0,170,255,0.35); background: linear-gradient(160deg, #0a1628, #0d2040); box-shadow: 0 0 50px rgba(0,170,255,0.08); }
+    .pc-badge { background: var(--blue); color: #000; font-family: var(--font-display); font-size: 0.65rem; font-weight: 800; letter-spacing: 3px; text-align: center; padding: 9px; text-transform: uppercase; }
+    .pc-top { padding: 32px 28px 24px; border-bottom: 1px solid var(--border); }
+    .pc-tier { font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; }
+    .pc-price { font-family: var(--font-display); font-weight: 900; line-height: 1; margin-bottom: 6px; }
+    .pc-price .dollar { font-size: 1.6rem; vertical-align: top; margin-top: 8px; display: inline-block; color: var(--text-white); }
+    .pc-price .amount { font-size: 3.4rem; color: var(--text-white); }
+    .pc-featured .pc-price .amount { color: var(--blue); text-shadow: 0 0 30px rgba(0,170,255,0.4); }
+    .pc-price .suffix { font-size: 1.1rem; color: var(--text-muted); }
+    .pc-note { font-size: 0.78rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
+    .pc-desc { padding: 20px 28px; font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; border-bottom: 1px solid var(--border); }
+    .pc-features { padding: 20px 28px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--border); }
+    .pc-features li { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--text-muted); }
+    .pf-check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--blue-glow); border: 1px solid var(--border-hot); color: var(--blue); font-size: 0.65rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .pc-btn { display: block; margin: 24px 28px; text-align: center; padding: 14px; border: 1px solid var(--border-hot); border-radius: 8px; color: var(--blue-bright); font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--blue-glow2); transition: all 0.3s ease; }
+    .pc-btn:hover { background: var(--blue-glow); box-shadow: 0 0 16px rgba(0,170,255,0.2); }
+    .pc-btn-featured { background: var(--blue); color: #000; border-color: var(--blue); box-shadow: 0 0 24px rgba(0,170,255,0.35); }
+    .pc-btn-featured:hover { background: var(--blue-bright); box-shadow: 0 0 36px rgba(0,170,255,0.5); }
+    .pricing-faq { margin-top: 72px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; transition: border-color 0.3s; }
+    .faq-item:hover { border-color: var(--border-hot); }
+    .faq-item h4 { font-family: var(--font-display); font-size: 0.85rem; color: var(--text-white); margin-bottom: 10px; font-weight: 700; }
+    .faq-item p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+    .pricing-note { display: flex; align-items: flex-start; gap: 14px; margin-top: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .pnote-icon { font-size: 1.4rem; }
+    .pricing-note p { font-size: 0.9rem; color: var(--text-muted); }
+    .pricing-note a { color: var(--blue-bright); border-bottom: 1px solid rgba(0,170,255,0.3); }
+    @media (max-width: 900px) { .pricing-cards { grid-template-columns: 1fr; max-width: 480px; margin: 40px auto 0; } .pricing-faq { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <canvas id="dotsCanvas"></canvas>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services">Services</a></li>
+        <li><a href="/how-it-works">How It Works</a></li>
+        <li><a href="/pricing" style="color:var(--blue-bright)">Pricing</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <div class="section-label">Transparent Pricing</div>
+      <h1 class="section-title">Simple, Clear <em>Packages</em></h1>
+      <p class="section-sub">No hidden fees. No surprise invoices. You know exactly what you're getting and what it costs before we start.</p>
+    </div>
+  </section>
+
+  <section class="pricing-page">
+    <div class="section-inner">
+
+      <div class="pricing-cards">
+
+        <div class="pc">
+          <div class="pc-top">
+            <div class="pc-tier">Basic Package</div>
+            <div class="pc-price"><span class="dollar">$</span><span class="amount">300</span></div>
+            <div class="pc-note">One-time payment</div>
+          </div>
+          <div class="pc-desc">Perfect for small businesses that need a clean, professional web presence fast. Get online and start looking legit.</div>
+          <ul class="pc-features">
+            <li><span class="pf-check">✓</span> Up to 5 custom pages</li>
+            <li><span class="pf-check">✓</span> Mobile-responsive design</li>
+            <li><span class="pf-check">✓</span> Contact form included</li>
+            <li><span class="pf-check">✓</span> SEO-ready structure</li>
+            <li><span class="pf-check">✓</span> Domain & hosting guidance</li>
+            <li><span class="pf-check">✓</span> Delivered in 1–2 weeks</li>
+          </ul>
+          <a href="/contact" class="pc-btn">Get Started →</a>
+        </div>
+
+        <div class="pc pc-featured">
+          <div class="pc-badge">⚡ Most Popular</div>
+          <div class="pc-top">
+            <div class="pc-tier">Premium Build</div>
+            <div class="pc-price"><span class="dollar">$</span><span class="amount">800</span><span class="suffix">+</span></div>
+            <div class="pc-note">One-time · starts at $800</div>
+          </div>
+          <div class="pc-desc">A fully equipped, feature-rich website built to grow your business — plus your ongoing support infrastructure set up and ready to go.</div>
+          <ul class="pc-features">
+            <li><span class="pf-check">✓</span> Up to 10+ custom pages</li>
+            <li><span class="pf-check">✓</span> Advanced animations & interactions</li>
+            <li><span class="pf-check">✓</span> Booking, e-commerce, or custom features</li>
+            <li><span class="pf-check">✓</span> Full SEO setup & Google Analytics</li>
+            <li><span class="pf-check">✓</span> Ongoing support infrastructure configured</li>
+            <li><span class="pf-check">✓</span> Priority delivery — 2–4 weeks</li>
+            <li><span class="pf-check">✓</span> 2 rounds of revisions included</li>
+          </ul>
+          <a href="/contact" class="pc-btn pc-btn-featured">Get My Site Built →</a>
+        </div>
+
+        <div class="pc">
+          <div class="pc-top">
+            <div class="pc-tier">Monthly Support</div>
+            <div class="pc-price"><span class="dollar">$</span><span class="amount">250</span><span class="suffix">/mo</span></div>
+            <div class="pc-note">Ongoing subscription</div>
+          </div>
+          <div class="pc-desc">Keep your site fresh, fast, and working perfectly every single month. Edits, monitoring, updates — all handled for you.</div>
+          <ul class="pc-features">
+            <li><span class="pf-check">✓</span> Ongoing site monitoring</li>
+            <li><span class="pf-check">✓</span> Monthly content edits & updates</li>
+            <li><span class="pf-check">✓</span> Security patches & performance tuning</li>
+            <li><span class="pf-check">✓</span> Bug fixes — fast turnaround</li>
+            <li><span class="pf-check">✓</span> Monthly progress report</li>
+            <li><span class="pf-check">✓</span> Cancel anytime</li>
+          </ul>
+          <a href="/contact" class="pc-btn">Start Subscription →</a>
+        </div>
+
+      </div>
+
+      <div class="pricing-note" style="margin-top:48px;">
+        <div class="pnote-icon">💬</div>
+        <p>Not sure which package is right for you? <a href="/contact">Send me a message</a> and I'll recommend the best fit for your business and budget — no pressure, no sales pitch.</p>
+      </div>
+
+      <div class="section-label" style="margin-top:72px;">Common Questions</div>
+      <h2 class="section-title">Pricing <em>FAQ</em></h2>
+      <div class="pricing-faq">
+        <div class="faq-item"><h4>Do I pay all at once?</h4><p>For one-time builds, we typically do 50% upfront and 50% on delivery. Monthly support is billed at the start of each month.</p></div>
+        <div class="faq-item"><h4>What if I need something bigger?</h4><p>The Premium package starts at $800 and scales with complexity. Large e-commerce stores or custom web apps will be quoted individually after our discovery call.</p></div>
+        <div class="faq-item"><h4>Is hosting included?</h4><p>Hosting is separate but I'll help you set it up and recommend the right plan for your budget. Most clients spend $5–$20/month on hosting.</p></div>
+        <div class="faq-item"><h4>Can I cancel the monthly plan?</h4><p>Yes — cancel anytime with no penalty. The monthly plan runs month-to-month with no long-term contract required.</p></div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const dots = Array.from({ length: 70 }, () => ({
+      x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.6, vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35, a: Math.random(), aSpeed: Math.random() * 0.006 + 0.002,
+    }));
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(d => {
+        d.x += d.vx; d.y += d.vy; d.a += d.aSpeed;
+        if (d.x < 0) d.x = canvas.width; if (d.x > canvas.width) d.x = 0;
+        if (d.y < 0) d.y = canvas.height; if (d.y > canvas.height) d.y = 0;
+        const alpha = (Math.sin(d.a) + 1) / 2 * 0.7 + 0.15;
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,170,255,${alpha.toFixed(2)})`; ctx.fill();
+      });
+      for (let i = 0; i < dots.length; i++) for (let j = i+1; j < dots.length; j++) {
+        const dx = dots[i].x-dots[j].x, dy = dots[i].y-dots[j].y, dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist < 140) {
+          ctx.beginPath(); ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(dots[j].x, dots[j].y);
+          ctx.strokeStyle = `rgba(0,170,255,${((1-dist/140)*0.25).toFixed(2)})`; ctx.lineWidth = 0.7; ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+  </script>
+</body>
+</html>

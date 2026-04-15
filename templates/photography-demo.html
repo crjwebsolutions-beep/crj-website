@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bloom Photography Studio — Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Syne', sans-serif; background: #faf8f5; color: #2c2416; overflow-x: hidden; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    /* ── BACK BANNER ── */
+    .back-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(3,7,18,0.95); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,170,255,0.2);
+      padding: 10px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,170,255,0.1); border: 1px solid rgba(0,170,255,0.35);
+      color: #33bbff; font-family: 'Syne', sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 8px 18px; border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(0,170,255,0.22); box-shadow: 0 0 16px rgba(0,170,255,0.3); }
+    .back-btn svg { width: 14px; height: 14px; }
+    .demo-label { font-family: 'Syne', sans-serif; font-size: 0.62rem; letter-spacing: 3px; color: rgba(0,170,255,0.6); text-transform: uppercase; }
+
+    /* ── DEMO NAVBAR ── */
+    .demo-nav {
+      position: fixed; top: 48px; left: 0; right: 0; z-index: 100;
+      background: rgba(250,248,245,0.97); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(44,36,22,0.1); padding: 18px 0;
+    }
+    .demo-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .demo-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #2c2416; letter-spacing: 0.5px; }
+    .demo-logo span { font-family: 'Syne', sans-serif; font-size: 0.5rem; display: block; letter-spacing: 4px; color: #a08060; margin-top: 2px; font-weight: 400; text-transform: uppercase; }
+    .demo-nav-links { display: flex; gap: 32px; }
+    .demo-nav-links a { font-size: 0.8rem; letter-spacing: 0.5px; color: rgba(44,36,22,0.6); transition: color 0.3s; }
+    .demo-nav-links a:hover { color: #2c2416; }
+    .demo-nav-cta { background: #2c2416; color: #faf8f5; font-weight: 600; padding: 9px 22px; border-radius: 6px; font-size: 0.82rem; transition: all 0.3s; }
+    .demo-nav-cta:hover { background: #3d3320; }
+
+    /* ── HERO ── */
+    .p-hero { min-height: 100vh; display: flex; align-items: center; padding: 148px 0 80px; background: #faf8f5; position: relative; overflow: hidden; }
+    .p-hero-grid { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+    .p-tag { display: inline-block; font-size: 0.68rem; letter-spacing: 3px; color: #a08060; text-transform: uppercase; border-bottom: 1px solid rgba(160,128,96,0.4); padding-bottom: 6px; margin-bottom: 24px; }
+    .p-hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 700; line-height: 1.15; color: #2c2416; margin-bottom: 20px; }
+    .p-hero-title em { font-style: italic; color: #a08060; }
+    .p-hero-sub { font-size: 1rem; color: rgba(44,36,22,0.6); max-width: 420px; margin-bottom: 32px; line-height: 1.8; }
+    .p-btn-dark { display: inline-flex; align-items: center; background: #2c2416; color: #faf8f5; font-weight: 600; padding: 13px 28px; border-radius: 6px; font-size: 0.9rem; transition: all 0.3s; margin-right: 14px; }
+    .p-btn-dark:hover { background: #3d3320; transform: translateY(-2px); }
+    .p-btn-outline { display: inline-flex; align-items: center; border: 1px solid rgba(44,36,22,0.3); color: #2c2416; font-weight: 500; padding: 13px 24px; border-radius: 6px; font-size: 0.9rem; transition: all 0.3s; }
+    .p-btn-outline:hover { border-color: #2c2416; background: rgba(44,36,22,0.04); }
+    .p-hero-img-col { position: relative; }
+    .p-hero-img-main { width: 100%; height: 560px; background: linear-gradient(135deg, #e8ddd0, #d4c8b8); border-radius: 16px; overflow: hidden; position: relative; }
+    .p-hero-img-main img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    .p-hero-img-accent {
+      position: absolute; bottom: 0; right: 0; width: 160px; height: 140px;
+      background: linear-gradient(135deg, #f0e8dc, #e4d8c8); border-radius: 12px;
+      border: 4px solid #faf8f5; overflow: hidden; z-index: 2;
+    }
+    .p-hero-img-accent img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+
+    /* ── ABOUT ── */
+    .p-about { padding: 100px 0; background: #2c2416; }
+    .p-about-grid { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+    .p-about-img { height: 420px; background: linear-gradient(135deg, #3d3320, #4a3d28); border-radius: 16px; overflow: hidden; }
+    .p-about-img img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; border-radius: 16px; }
+    .p-about-tag { font-size: 0.65rem; letter-spacing: 3px; color: #a08060; text-transform: uppercase; margin-bottom: 16px; }
+    .p-about-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); color: #faf8f5; font-weight: 700; margin-bottom: 20px; line-height: 1.2; }
+    .p-about-title em { font-style: italic; color: #c8a878; }
+    .p-about-body p { font-size: 0.95rem; color: rgba(250,248,245,0.6); line-height: 1.8; margin-bottom: 14px; }
+    .p-about-body p strong { color: #faf8f5; font-weight: 500; }
+
+    /* ── GALLERY ── */
+    .p-gallery { padding: 100px 0; background: #faf8f5; }
+    .p-gallery-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .p-section-tag { font-size: 0.65rem; letter-spacing: 3px; color: #a08060; text-transform: uppercase; margin-bottom: 12px; }
+    .p-section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); color: #2c2416; font-weight: 700; margin-bottom: 40px; }
+    .p-section-title em { font-style: italic; color: #a08060; }
+    .p-gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .p-gal-item { border-radius: 10px; overflow: hidden; aspect-ratio: 4/5; transition: transform 0.4s; cursor: pointer; }
+    .p-gal-item:hover { transform: scale(1.02); }
+    .p-gal-item img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    .p-gal-4 { grid-column: span 2; aspect-ratio: 16/9; }
+
+    /* ── INVESTMENT ── */
+    .p-investment { padding: 100px 0; background: #f0ece4; }
+    .p-inv-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .p-inv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+    .p-inv-card { background: #faf8f5; border-radius: 14px; padding: 36px 28px; border: 1px solid rgba(44,36,22,0.08); transition: all 0.3s; }
+    .p-inv-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(44,36,22,0.1); }
+    .p-inv-tier { font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase; color: #a08060; margin-bottom: 12px; }
+    .p-inv-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #2c2416; margin-bottom: 8px; }
+    .p-inv-price { font-size: 1.8rem; font-weight: 700; color: #2c2416; margin-bottom: 16px; }
+    .p-inv-price span { font-size: 0.9rem; font-weight: 400; color: rgba(44,36,22,0.5); }
+    .p-inv-features { display: flex; flex-direction: column; gap: 10px; }
+    .p-inv-feature { font-size: 0.88rem; color: rgba(44,36,22,0.65); display: flex; align-items: center; gap: 10px; }
+    .p-inv-feature::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #a08060; flex-shrink: 0; }
+    .p-inv-btn { display: block; margin-top: 28px; text-align: center; padding: 12px; background: #2c2416; color: #faf8f5; border-radius: 7px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; }
+    .p-inv-btn:hover { background: #3d3320; }
+
+    /* ── TESTIMONIALS ── */
+    .p-test { padding: 100px 0; background: #faf8f5; }
+    .p-test-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .p-test-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 40px; }
+    .p-test-card { background: #f0ece4; border-radius: 14px; padding: 32px 28px; }
+    .p-test-quote { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #a08060; line-height: 1; margin-bottom: 12px; }
+    .p-test-text { font-size: 0.95rem; color: rgba(44,36,22,0.7); line-height: 1.75; margin-bottom: 18px; font-style: italic; }
+    .p-test-name { font-weight: 600; color: #2c2416; font-size: 0.9rem; }
+    .p-test-session { font-size: 0.78rem; color: #a08060; }
+
+    /* ── CONTACT ── */
+    .p-contact { padding: 100px 0; background: #2c2416; }
+    .p-contact-inner { max-width: 700px; margin: 0 auto; padding: 0 24px; text-align: center; }
+    .p-contact-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); color: #faf8f5; font-weight: 700; margin-bottom: 16px; }
+    .p-contact-title em { font-style: italic; color: #c8a878; }
+    .p-contact-sub { font-size: 0.95rem; color: rgba(250,248,245,0.55); margin-bottom: 40px; line-height: 1.75; }
+    .p-contact-form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+    .p-cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .p-cf-group { display: flex; flex-direction: column; gap: 6px; }
+    .p-cf-group label { font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(250,248,245,0.45); }
+    .p-cf-group input, .p-cf-group select, .p-cf-group textarea { background: rgba(250,248,245,0.06); border: 1px solid rgba(250,248,245,0.15); border-radius: 8px; color: #faf8f5; padding: 11px 14px; font-size: 0.92rem; font-family: 'Syne', sans-serif; outline: none; }
+    .p-cf-group input:focus, .p-cf-group select:focus, .p-cf-group textarea:focus { border-color: #c8a878; }
+    .p-cf-group textarea { resize: vertical; min-height: 100px; }
+    .p-cf-group select option { background: #2c2416; }
+    .p-cf-submit { padding: 14px; background: #c8a878; color: #2c2416; font-weight: 700; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-family: 'Syne', sans-serif; }
+    .p-cf-submit:hover { background: #d4b888; transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    .p-footer { padding: 40px 24px; background: #1e1810; text-align: center; }
+    .p-footer p { font-size: 0.8rem; color: rgba(250,248,245,0.3); margin-bottom: 8px; }
+    .crj-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,170,255,0.07); border: 1px solid rgba(0,170,255,0.2); color: rgba(51,187,255,0.65); font-size: 0.58rem; letter-spacing: 2px; padding: 5px 12px; border-radius: 4px; font-family: 'Syne', sans-serif; margin-top: 8px; }
+
+    @media (max-width: 768px) {
+      .p-hero-grid, .p-about-grid { grid-template-columns: 1fr; }
+      .p-hero-img-col { display: none; }
+      .p-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .p-gal-4 { grid-column: span 1; aspect-ratio: 4/5; }
+      .p-inv-grid, .p-test-grid { grid-template-columns: 1fr; }
+      .p-cf-row { grid-template-columns: 1fr; }
+      .demo-nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back Banner -->
+  <div class="back-banner">
+    <a href="/portfolio" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Portfolio
+    </a>
+    <span class="demo-label">⚡ Demo Site — Built by CRJ Web Solutions</span>
+  </div>
+
+  <!-- Demo Navbar -->
+  <nav class="demo-nav">
+    <div class="demo-nav-inner">
+      <div class="demo-logo">Bloom Photography<span>Austin, Texas</span></div>
+      <ul class="demo-nav-links">
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#investment">Investment</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#contact" class="demo-nav-cta">Book a Session</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="p-hero">
+    <div class="p-hero-grid">
+      <div class="p-hero-text">
+        <div class="p-tag">Family &amp; Maternity Photographer</div>
+        <h1 class="p-hero-title">Capturing <em>Moments</em> That Last a Lifetime.</h1>
+        <p class="p-hero-sub">From bump to baby, first steps to family milestones — I'm here to preserve the moments you'll want to remember forever.</p>
+        <div>
+          <a href="#contact" class="p-btn-dark">Book a Session →</a>
+          <a href="#gallery" class="p-btn-outline">View Gallery</a>
+        </div>
+      </div>
+      <div class="p-hero-img-col">
+        <div class="p-hero-img-main">
+          <img src="{{ url_for('static', filename='images/family2.jpg') }}" alt="Baby portrait">
+          <div class="p-hero-img-accent">
+            <img src="{{ url_for('static', filename='images/family1.jpg') }}" alt="Family portrait">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="p-about" id="about">
+    <div class="p-about-grid">
+      <div class="p-about-img">
+        <img src="{{ url_for('static', filename='images/family3.jpg') }}" alt="Family photography session">
+      </div>
+      <div class="p-about-body">
+        <div class="p-about-tag">About the Photographer</div>
+        <h2 class="p-about-title">Hi, I'm <em>Sarah</em> — and I believe every family has a story worth telling.</h2>
+        <p>I've been photographing families in the Austin area for over 8 years. What started as a passion project has grown into a full-time studio dedicated to capturing genuine, joyful moments — not posed, stiff portraits.</p>
+        <p>Every session I do is <strong>relaxed, fun, and designed around your family</strong>. I want your kids to be themselves, your partner to stop worrying about the camera, and for everyone to walk away with photos they actually love.</p>
+        <p>Based in Austin. Available for outdoor sessions, in-home sessions, hospital newborns, and on-location shoots across Central Texas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="p-gallery" id="gallery">
+    <div class="p-gallery-inner">
+      <div class="p-section-tag">Portfolio</div>
+      <h2 class="p-section-title">A Glimpse at the <em>Work</em></h2>
+      <div class="p-gallery-grid">
+        <div class="p-gal-item p-gal-1">
+          <img src="{{ url_for('static', filename='images/family4.jpg') }}" alt="Children portrait">
+        </div>
+        <div class="p-gal-item p-gal-2">
+          <img src="{{ url_for('static', filename='images/family1.jpg') }}" alt="Family portrait">
+        </div>
+        <div class="p-gal-item p-gal-3">
+          <img src="{{ url_for('static', filename='images/family6.jpg') }}" alt="Sibling portrait">
+        </div>
+        <div class="p-gal-item p-gal-4">
+          <img src="{{ url_for('static', filename='images/family7.jpg') }}" alt="Family portrait" style="width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;">
+        </div>
+        <div class="p-gal-item p-gal-5">
+          <img src="{{ url_for('static', filename='images/family8.jpg') }}" alt="Family portrait" style="width:100%;height:100%;object-fit:cover;object-position:center 12%;display:block;">
+        </div>
+        <div class="p-gal-item p-gal-6">
+          <img src="{{ url_for('static', filename='images/family9.jpg') }}" alt="Couple portrait">
+        </div>
+        <div class="p-gal-item p-gal-7">
+          <img src="{{ url_for('static', filename='images/family5.jpg') }}" alt="Family portrait">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Investment -->
+  <section class="p-investment" id="investment">
+    <div class="p-inv-inner">
+      <div class="p-section-tag">Sessions &amp; Pricing</div>
+      <h2 class="p-section-title">Simple, <em>Clear</em> Pricing</h2>
+      <div class="p-inv-grid">
+        <div class="p-inv-card">
+          <div class="p-inv-tier">Essential</div>
+          <div class="p-inv-name">Mini Session</div>
+          <div class="p-inv-price">$250<span> / session</span></div>
+          <div class="p-inv-features">
+            <div class="p-inv-feature">30-minute session</div>
+            <div class="p-inv-feature">1 location</div>
+            <div class="p-inv-feature">20+ edited digital images</div>
+            <div class="p-inv-feature">Online gallery delivery</div>
+          </div>
+          <a href="#contact" class="p-inv-btn">Book This Session</a>
+        </div>
+        <div class="p-inv-card" style="border-color:rgba(160,128,96,0.3);box-shadow:0 8px 32px rgba(160,128,96,0.1)">
+          <div class="p-inv-tier" style="color:#c8a070">Most Popular</div>
+          <div class="p-inv-name">Full Family Session</div>
+          <div class="p-inv-price">$450<span> / session</span></div>
+          <div class="p-inv-features">
+            <div class="p-inv-feature">1-hour session</div>
+            <div class="p-inv-feature">Up to 2 locations</div>
+            <div class="p-inv-feature">50+ edited digital images</div>
+            <div class="p-inv-feature">Online gallery + print release</div>
+            <div class="p-inv-feature">1 complimentary 8x10 print</div>
+          </div>
+          <a href="#contact" class="p-inv-btn">Book This Session</a>
+        </div>
+        <div class="p-inv-card">
+          <div class="p-inv-tier">Premium</div>
+          <div class="p-inv-name">Maternity + Newborn</div>
+          <div class="p-inv-price">$750<span> / bundle</span></div>
+          <div class="p-inv-features">
+            <div class="p-inv-feature">Maternity session (1hr)</div>
+            <div class="p-inv-feature">Newborn session (2hr)</div>
+            <div class="p-inv-feature">100+ edited images total</div>
+            <div class="p-inv-feature">Full print release</div>
+            <div class="p-inv-feature">Custom album included</div>
+          </div>
+          <a href="#contact" class="p-inv-btn">Book This Session</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="p-test" id="testimonials">
+    <div class="p-test-inner">
+      <div class="p-section-tag">Client Love</div>
+      <h2 class="p-section-title">What Families <em>Say</em></h2>
+      <div class="p-test-grid">
+        <div class="p-test-card">
+          <div class="p-test-quote">"</div>
+          <div class="p-test-text">Sarah made our whole family feel so relaxed. The photos came out better than anything I imagined. We cried looking through them — in the best possible way.</div>
+          <div class="p-test-name">The Henderson Family</div>
+          <div class="p-test-session">Full Family Session · Zilker Park</div>
+        </div>
+        <div class="p-test-card">
+          <div class="p-test-quote">"</div>
+          <div class="p-test-text">I booked the maternity session on a whim and it was the best decision I made during my pregnancy. The photos are absolutely stunning. Sarah is incredible at what she does.</div>
+          <div class="p-test-name">Mia Torres</div>
+          <div class="p-test-session">Maternity Session · Barton Springs</div>
+        </div>
+        <div class="p-test-card">
+          <div class="p-test-quote">"</div>
+          <div class="p-test-text">Getting two active boys to sit still seemed impossible, but Sarah was patient, fun, and somehow got the most genuine smiles out of them. Magical.</div>
+          <div class="p-test-name">The Clarke Family</div>
+          <div class="p-test-session">Mini Session · Brushy Creek</div>
+        </div>
+        <div class="p-test-card">
+          <div class="p-test-quote">"</div>
+          <div class="p-test-text">The newborn bundle was worth every penny. She came to our home, our baby stayed comfortable the whole time, and the photos are absolutely timeless.</div>
+          <div class="p-test-name">Priya &amp; Raj Sharma</div>
+          <div class="p-test-session">Maternity + Newborn Bundle</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="p-contact" id="contact">
+    <div class="p-contact-inner">
+      <div class="p-section-tag" style="color:#c8a878">Let's Connect</div>
+      <h2 class="p-contact-title">Ready to Book Your <em>Session?</em></h2>
+      <p class="p-contact-sub">Fill out the form below and I'll get back to you within 24 hours. Can't wait to hear about your family.</p>
+      <div class="p-contact-form">
+        <div class="p-cf-row">
+          <div class="p-cf-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="Jane Smith"/>
+          </div>
+          <div class="p-cf-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="jane@email.com"/>
+          </div>
+        </div>
+        <div class="p-cf-row">
+          <div class="p-cf-group">
+            <label>Session Type</label>
+            <select>
+              <option>Mini Session — $250</option>
+              <option>Full Family Session — $450</option>
+              <option>Maternity + Newborn Bundle — $750</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="p-cf-group">
+            <label>Ideal Timeframe</label>
+            <input type="text" placeholder="e.g. August, October, ASAP..."/>
+          </div>
+        </div>
+        <div class="p-cf-group">
+          <label>Tell me about your family</label>
+          <textarea placeholder="How many people, kids' ages, anything special you'd like to capture..."></textarea>
+        </div>
+        <button class="p-cf-submit">Send My Inquiry →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="p-footer">
+    <p>© 2025 Bloom Photography · Austin, Texas · [email protected]</p>
+    <p style="margin-top:4px">This is a demo site · <a href="/portfolio" style="color:rgba(0,170,255,0.8)">Back to Portfolio</a></p>
+    <span class="crj-badge">Built by CRJ Web Solutions</span>
+  </footer>
+
+</body>
+</html>

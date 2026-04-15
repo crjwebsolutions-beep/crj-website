@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Services — CRJ Web Solutions</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* Floating dots — sits beneath the code-rain canvas */
+    #dotsCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.18; }
+
+    /* ── CODE BG EFFECT ─── */
+    .code-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .code-bg canvas { width: 100%; height: 100%; opacity: 0.045; }
+
+    .page-hero { padding: 160px 0 80px; position: relative; z-index: 1; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(0,170,255,0.10) 0%, transparent 70%); pointer-events: none; }
+
+    .services-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 56px; max-width: 960px; margin-left: auto; margin-right: auto; position: relative; z-index: 1; }
+    .srv-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 48px 40px; position: relative; overflow: hidden; transition: border-color 0.3s, transform 0.3s; display: flex; flex-direction: column; }
+    .srv-card:hover { border-color: var(--border-hot); transform: translateY(-5px); }
+    .srv-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: 0; transition: opacity 0.3s; }
+    .srv-card:hover::before { opacity: 1; }
+    .srv-card.srv-featured { border-color: rgba(0,170,255,0.3); background: linear-gradient(135deg, #0a1628, #0d1e35); box-shadow: 0 0 50px rgba(0,170,255,0.07); }
+    .srv-badge { display: inline-block; font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 2px; color: var(--blue-bright); border: 1px solid var(--border-hot); background: var(--blue-glow2); padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; align-self: flex-start; }
+    .srv-icon { font-size: 2.2rem; margin-bottom: 20px; }
+    .srv-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text-white); margin-bottom: 14px; letter-spacing: 1px; }
+    .srv-desc { color: var(--text-muted); font-size: 0.96rem; line-height: 1.75; margin-bottom: 28px; }
+    .srv-features { list-style: none; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .srv-features li { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
+    .srv-features li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+    .srv-cta-row { text-align: center; margin-top: 64px; padding: 56px 48px; background: var(--bg-card); border: 1px solid var(--border-hot); border-radius: var(--radius-lg); position: relative; z-index: 1; max-width: 960px; margin-left: auto; margin-right: auto; }
+    .srv-cta-row h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--text-white); margin-bottom: 12px; }
+    .srv-cta-row p { color: var(--text-muted); margin-bottom: 28px; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    @media (max-width: 700px) { .services-duo { grid-template-columns: 1fr; } .srv-cta-row { padding: 36px 24px; } }
+  </style>
+</head>
+<body>
+  <canvas id="dotsCanvas"></canvas>
+  <div class="code-bg"><canvas id="codeBgCanvas"></canvas></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-crj">CRJ</span>
+        <span class="logo-sub">WEB SOLUTIONS</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/services" style="color:var(--blue-bright)">Services</a></li>
+        <li><a href="/how-it-works">How It Works</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="/portfolio">Portfolio</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Get My Website Built</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <div class="section-label">What We Build</div>
+      <h1 class="section-title">Everything Your Business<br><em>Needs Online</em></h1>
+      <p class="section-sub" style="max-width:560px;">CRJ builds custom websites that attract customers, earn trust, and grow your revenue. No templates, no shortcuts.</p>
+    </div>
+  </section>
+
+  <section style="padding: 0 0 80px; position: relative; z-index: 1;">
+    <div class="section-inner">
+      <div class="services-duo">
+
+        <div class="srv-card srv-featured">
+          <span class="srv-badge">PRIMARY SERVICE</span>
+          <div class="srv-icon">🌐</div>
+          <div class="srv-title">Business Websites</div>
+          <p class="srv-desc">Professional, high-performing websites designed to attract customers, build trust, and grow your business.</p>
+          <ul class="srv-features">
+            <li>Custom-designed pages</li>
+            <li>Mobile-first responsive design</li>
+            <li>SEO-optimized structure</li>
+            <li>Contact forms and lead capture</li>
+            <li>Fast loading speeds</li>
+            <li>Clean UI/UX</li>
+            <li>Delivered in 2 to 3 weeks</li>
+          </ul>
+        </div>
+
+        <div class="srv-card">
+          <div class="srv-icon">🔧</div>
+          <div class="srv-title">Website Maintenance</div>
+          <p class="srv-desc">Keep your website fast, secure, and running smoothly with ongoing support and updates.</p>
+          <ul class="srv-features">
+            <li>Bug fixes and updates</li>
+            <li>Speed optimization</li>
+            <li>Security patches</li>
+            <li>Content updates</li>
+            <li>Monthly support</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 0 0 120px; position: relative; z-index: 1;">
+    <div class="section-inner">
+      <div class="srv-cta-row">
+        <h3>Not sure which package fits you?</h3>
+        <p>Tell us about your business and we'll recommend the right fit with no pressure.</p>
+        <div class="cta-btns">
+          <a href="/contact" class="btn-primary">Get a Free Quote →</a>
+          <a href="/pricing" class="btn-ghost">See Pricing</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+  /* Floating dots */
+  (function () {
+    const canvas = document.getElementById('dotsCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const dots = Array.from({ length: 70 }, () => ({
+      x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
+      r: Math.random()*1.8+0.6, vx: (Math.random()-0.5)*0.35, vy: (Math.random()-0.5)*0.35,
+      a: Math.random(), aSpeed: Math.random()*0.006+0.002,
+    }));
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      dots.forEach(d => {
+        d.x+=d.vx; d.y+=d.vy; d.a+=d.aSpeed;
+        if(d.x<0)d.x=canvas.width; if(d.x>canvas.width)d.x=0;
+        if(d.y<0)d.y=canvas.height; if(d.y>canvas.height)d.y=0;
+        const alpha=(Math.sin(d.a)+1)/2*0.7+0.15;
+        ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,170,255,${alpha.toFixed(2)})`; ctx.fill();
+      });
+      for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++){
+        const dx=dots[i].x-dots[j].x, dy=dots[i].y-dots[j].y, dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<140){
+          ctx.beginPath(); ctx.moveTo(dots[i].x,dots[i].y); ctx.lineTo(dots[j].x,dots[j].y);
+          ctx.strokeStyle=`rgba(0,170,255,${((1-dist/140)*0.25).toFixed(2)})`; ctx.lineWidth=0.7; ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* Code background rain */
+  (function() {
+    const canvas = document.getElementById('codeBgCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; init(); });
+    const snippets = ['<div>','</div>','const ','let ','function()','return','{','}','[]','async','await','fetch()','.then()','margin:','padding:','display:','flex','grid','border:','color:','background:','import','export','class','style=','href=','src=','if()','for()','var '];
+    const cols = Math.floor(canvas.width / 18);
+    let drops = [];
+    function init() { drops = Array.from({length: cols}, () => Math.random() * -canvas.height); }
+    init();
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.font = '12px monospace';
+      ctx.fillStyle = 'rgba(0,170,255,1)';
+      drops.forEach((y, i) => {
+        const text = snippets[Math.floor(Math.random() * snippets.length)];
+        ctx.fillText(text, i * 18, y);
+        drops[i] += 0.4;
+        if (drops[i] > canvas.height && Math.random() > 0.97) drops[i] = 0;
+      });
+    }
+    setInterval(draw, 80);
+  })();
+  </script>
+</body>
+</html>

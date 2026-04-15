@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atlas & Light Photography — Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Syne:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Syne', sans-serif; background: #080808; color: #e8e4dc; overflow-x: hidden; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    /* ── BACK BANNER ── */
+    .back-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(3,7,18,0.95); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,170,255,0.2);
+      padding: 10px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,170,255,0.1); border: 1px solid rgba(0,170,255,0.35);
+      color: #33bbff; font-family: 'Syne', sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 8px 18px; border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(0,170,255,0.22); box-shadow: 0 0 16px rgba(0,170,255,0.3); }
+    .back-btn svg { width: 14px; height: 14px; }
+    .demo-label { font-family: 'Syne', sans-serif; font-size: 0.62rem; letter-spacing: 3px; color: rgba(0,170,255,0.6); text-transform: uppercase; }
+
+    /* ── DEMO NAVBAR ── */
+    .demo-nav {
+      position: fixed; top: 48px; left: 0; right: 0; z-index: 100;
+      background: rgba(8,8,8,0.92); backdrop-filter: blur(20px);
+      padding: 20px 0;
+    }
+    .demo-nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .demo-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 300; color: #e8e4dc; letter-spacing: 3px; text-transform: uppercase; }
+    .demo-logo span { display: block; font-size: 0.46rem; letter-spacing: 5px; color: rgba(232,228,220,0.4); margin-top: 3px; font-family: 'Syne', sans-serif; }
+    .demo-nav-links { display: flex; gap: 36px; }
+    .demo-nav-links a { font-size: 0.75rem; letter-spacing: 2px; color: rgba(232,228,220,0.5); text-transform: uppercase; transition: color 0.3s; }
+    .demo-nav-links a:hover { color: #e8e4dc; }
+    .demo-nav-cta { border: 1px solid rgba(232,228,220,0.3); color: #e8e4dc; padding: 8px 20px; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s; border-radius: 2px; }
+    .demo-nav-cta:hover { background: rgba(232,228,220,0.08); border-color: rgba(232,228,220,0.6); }
+
+    /* ── FULLSCREEN HERO ── */
+    .t-hero {
+      height: 100vh; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; background: #080808;
+      padding-top: 96px;
+    }
+    .t-hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 60%, rgba(80,60,20,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 30%, rgba(20,40,60,0.2) 0%, transparent 50%);
+    }
+    .t-hero-canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.12; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .t-hero-panel { background: linear-gradient(135deg, #1a1610, #0d0d0d); }
+    .t-hero-inner { position: relative; z-index: 2; text-align: center; max-width: 900px; padding: 0 24px; }
+    .t-hero-eyebrow { font-size: 0.65rem; letter-spacing: 5px; color: rgba(232,228,220,0.4); text-transform: uppercase; margin-bottom: 28px; }
+    .t-hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 9vw, 8rem); font-weight: 300; line-height: 0.95; color: #e8e4dc; margin-bottom: 24px; letter-spacing: -1px; }
+    .t-hero-title em { font-style: italic; }
+    .t-hero-sub { font-size: 0.92rem; color: rgba(232,228,220,0.45); letter-spacing: 1.5px; max-width: 480px; margin: 0 auto 40px; line-height: 1.9; }
+    .t-hero-btns { display: flex; gap: 20px; justify-content: center; align-items: center; }
+    .t-btn-light { display: inline-flex; align-items: center; background: #e8e4dc; color: #080808; font-weight: 600; padding: 12px 28px; border-radius: 2px; font-size: 0.82rem; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.3s; }
+    .t-btn-light:hover { background: #fff; transform: translateY(-2px); }
+    .t-btn-ghost { display: inline-flex; align-items: center; border: 1px solid rgba(232,228,220,0.3); color: rgba(232,228,220,0.7); font-size: 0.82rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 24px; border-radius: 2px; transition: all 0.3s; }
+    .t-btn-ghost:hover { border-color: rgba(232,228,220,0.7); color: #e8e4dc; }
+    .t-scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; letter-spacing: 3px; color: rgba(232,228,220,0.3); text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .t-scroll-line { width: 1px; height: 40px; background: rgba(232,228,220,0.2); }
+
+    /* ── FEATURED GRID ── */
+    .t-featured { padding: 0; }
+    .t-featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 360px 360px; gap: 3px; }
+    .t-feat-item { position: relative; overflow: hidden; cursor: pointer; }
+    .t-feat-item:first-child { grid-column: span 2; grid-row: span 2; }
+    .t-feat-bg { position: absolute; inset: 0; transition: transform 0.6s ease; }
+    .t-feat-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .t-feat-item:hover .t-feat-bg { transform: scale(1.05); }
+    .t-f1 { background: linear-gradient(135deg, #1a2840, #0d1a30); }
+    .t-f2 { background: linear-gradient(135deg, #2a1810, #1a0d08); }
+    .t-f3 { background: linear-gradient(135deg, #1a2818, #0d1a0d); }
+    .t-f4 { background: linear-gradient(135deg, #28201a, #1a140f); }
+    .t-f5 { background: linear-gradient(135deg, #1a1828, #0d0d1a); }
+    .t-feat-overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%); opacity: 0; transition: opacity 0.4s; display: flex; align-items: flex-end; padding: 24px; }
+    .t-feat-item:hover .t-feat-overlay { opacity: 1; }
+    .t-feat-label { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: #e8e4dc; font-style: italic; }
+    .t-feat-location { font-size: 0.72rem; letter-spacing: 2px; color: rgba(232,228,220,0.6); text-transform: uppercase; margin-left: auto; align-self: flex-end; }
+
+    /* ── ABOUT ── */
+    .t-about { padding: 120px 0; background: #0c0c0c; }
+    .t-about-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+    .t-about-img { height: 500px; border-radius: 2px; overflow: hidden; position: relative; }
+    .t-about-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 2px; }
+    .t-about-tag { font-size: 0.62rem; letter-spacing: 4px; color: rgba(232,228,220,0.35); text-transform: uppercase; margin-bottom: 20px; }
+    .t-about-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 300; color: #e8e4dc; margin-bottom: 24px; line-height: 1.2; }
+    .t-about-title em { font-style: italic; }
+    .t-about-body p { font-size: 0.9rem; color: rgba(232,228,220,0.5); line-height: 1.9; margin-bottom: 16px; }
+    .t-about-body p strong { color: rgba(232,228,220,0.85); font-weight: 500; }
+    .t-about-list { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+    .t-about-list-item { font-size: 0.82rem; color: rgba(232,228,220,0.45); display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+    .t-about-list-item::before { content: '—'; color: rgba(232,228,220,0.25); }
+
+    /* ── PORTFOLIO WALL ── */
+    .t-wall { padding: 100px 0; background: #080808; }
+    .t-wall-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .t-wall-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; }
+    .t-wall-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; color: #e8e4dc; }
+    .t-wall-title em { font-style: italic; }
+    .t-wall-filter { display: flex; gap: 24px; }
+    .t-filter-btn { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(232,228,220,0.4); cursor: pointer; transition: color 0.3s; padding-bottom: 4px; border-bottom: 1px solid transparent; }
+    .t-filter-btn:hover, .t-filter-btn.active { color: #e8e4dc; border-bottom-color: rgba(232,228,220,0.4); }
+    .t-wall-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .t-wall-item { aspect-ratio: 3/4; cursor: pointer; transition: transform 0.4s; overflow: hidden; position: relative; }
+    .t-wall-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .t-wall-item:hover { transform: scale(0.98); }
+    .tw1 { background: linear-gradient(135deg, #1a2840, #0d1a30); }
+    .tw2 { background: linear-gradient(135deg, #2a1810, #1a0d08); }
+    .tw3 { background: linear-gradient(135deg, #281a10, #1a1008); }
+    .tw4 { background: linear-gradient(135deg, #1a2818, #0d1a0d); }
+    .tw5 { background: linear-gradient(135deg, #20181a, #140f10); }
+    .tw6 { background: linear-gradient(135deg, #18201a, #0f140f); }
+    .tw7 { background: linear-gradient(135deg, #1a1820, #0f0f14); }
+    .tw8 { background: linear-gradient(135deg, #201810, #141008); }
+
+    /* ── PRINT SHOP ── */
+    .t-prints { padding: 100px 0; background: #0c0c0c; }
+    .t-prints-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .t-prints-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+    .t-print-card { background: #111; padding: 36px 30px; cursor: pointer; transition: background 0.3s; }
+    .t-print-card:hover { background: #181818; }
+    .t-print-size { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: #e8e4dc; margin-bottom: 8px; }
+    .t-print-name { font-size: 0.72rem; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(232,228,220,0.45); margin-bottom: 16px; }
+    .t-print-desc { font-size: 0.85rem; color: rgba(232,228,220,0.45); line-height: 1.7; margin-bottom: 20px; }
+    .t-print-price { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: #e8e4dc; font-weight: 600; }
+    .t-print-link { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(232,228,220,0.4); margin-left: 12px; border-bottom: 1px solid rgba(232,228,220,0.2); transition: color 0.3s; }
+    .t-print-link:hover { color: #e8e4dc; }
+
+    /* ── CONTACT ── */
+    .t-contact { padding: 120px 0; background: #080808; }
+    .t-contact-inner { max-width: 620px; margin: 0 auto; padding: 0 32px; }
+    .t-contact-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 3.8rem); font-weight: 300; color: #e8e4dc; text-align: center; margin-bottom: 14px; line-height: 1.1; }
+    .t-contact-title em { font-style: italic; }
+    .t-contact-sub { text-align: center; font-size: 0.88rem; color: rgba(232,228,220,0.4); letter-spacing: 1px; margin-bottom: 48px; line-height: 1.8; }
+    .t-cf-group { margin-bottom: 18px; }
+    .t-cf-group label { display: block; font-size: 0.66rem; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(232,228,220,0.3); margin-bottom: 8px; }
+    .t-cf-group input, .t-cf-group select, .t-cf-group textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(232,228,220,0.15); color: #e8e4dc; padding: 10px 0; font-size: 0.92rem; font-family: 'Syne', sans-serif; outline: none; transition: border-color 0.3s; }
+    .t-cf-group input:focus, .t-cf-group select:focus, .t-cf-group textarea:focus { border-bottom-color: rgba(232,228,220,0.55); }
+    .t-cf-group textarea { resize: none; height: 80px; }
+    .t-cf-group select option { background: #080808; }
+    .t-cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .t-cf-submit { width: 100%; margin-top: 12px; padding: 14px; background: transparent; border: 1px solid rgba(232,228,220,0.3); color: #e8e4dc; font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; font-family: 'Syne', sans-serif; border-radius: 2px; }
+    .t-cf-submit:hover { background: rgba(232,228,220,0.06); border-color: rgba(232,228,220,0.6); }
+
+    /* ── FOOTER ── */
+    .t-footer { padding: 60px 32px 32px; background: #050505; border-top: 1px solid rgba(232,228,220,0.05); }
+    .t-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 32px; margin-bottom: 40px; }
+    .t-footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; color: #e8e4dc; }
+    .t-footer-links { display: flex; gap: 32px; flex-wrap: wrap; }
+    .t-footer-links a { font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(232,228,220,0.35); transition: color 0.3s; }
+    .t-footer-links a:hover { color: #e8e4dc; }
+    .t-footer-copy { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(232,228,220,0.04); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .t-footer-copy p { font-size: 0.75rem; color: rgba(232,228,220,0.2); }
+    .crj-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,170,255,0.07); border: 1px solid rgba(0,170,255,0.2); color: rgba(51,187,255,0.65); font-size: 0.56rem; letter-spacing: 2px; padding: 4px 10px; border-radius: 4px; font-family: 'Syne', sans-serif; }
+
+    @media (max-width: 900px) {
+      .t-featured-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .t-feat-item:first-child { grid-column: span 2; grid-row: span 1; }
+      .t-about-inner { grid-template-columns: 1fr; }
+      .t-about-img { height: 300px; }
+      .t-wall-grid { grid-template-columns: repeat(2, 1fr); }
+      .t-prints-grid { grid-template-columns: 1fr; }
+      .t-cf-row { grid-template-columns: 1fr; }
+      .demo-nav-links { display: none; }
+      .t-wall-filter { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back Banner -->
+  <div class="back-banner">
+    <a href="/portfolio" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Portfolio
+    </a>
+    <span class="demo-label">⚡ Demo Site — Built by CRJ Web Solutions</span>
+  </div>
+
+  <!-- Demo Navbar -->
+  <nav class="demo-nav">
+    <div class="demo-nav-inner">
+      <div class="demo-logo">Atlas &amp; Light<span>Travel &amp; Landscape Photography</span></div>
+      <ul class="demo-nav-links">
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#prints">Prints</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#contact" class="demo-nav-cta">Inquire</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="t-hero">
+    <div class="t-hero-bg"></div>
+    <div class="t-hero-canvas">
+      <div class="t-hero-panel"></div><div class="t-hero-panel"></div>
+      <div class="t-hero-panel"></div><div class="t-hero-panel"></div>
+    </div>
+    <div class="t-hero-inner">
+      <div class="t-hero-eyebrow">Travel &amp; Landscape Photography</div>
+      <h1 class="t-hero-title">The World<br><em>Seen Differently.</em></h1>
+      <p class="t-hero-sub">Fine art travel photography from six continents. Available as limited edition prints and for editorial licensing.</p>
+      <div class="t-hero-btns">
+        <a href="#gallery" class="t-btn-light">Explore the Work</a>
+        <a href="#prints" class="t-btn-ghost">Shop Prints</a>
+      </div>
+    </div>
+    <div class="t-scroll-hint">
+      <div class="t-scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- Featured Grid -->
+  <section class="t-featured" id="gallery">
+    <div class="t-featured-grid">
+      <div class="t-feat-item">
+        <div class="t-feat-bg t-f1"><img src="{{ url_for('static', filename='images/travel1.jpg') }}" alt=""/></div>
+        <div class="t-feat-overlay">
+          <span class="t-feat-label">The Dolomites at First Light</span>
+          <span class="t-feat-location">Italy</span>
+        </div>
+      </div>
+      <div class="t-feat-item">
+        <div class="t-feat-bg t-f2"><img src="{{ url_for('static', filename='images/travel2.jpg') }}" alt=""/></div>
+        <div class="t-feat-overlay">
+          <span class="t-feat-label">Sahara Dawn</span>
+          <span class="t-feat-location">Morocco</span>
+        </div>
+      </div>
+      <div class="t-feat-item">
+        <div class="t-feat-bg t-f3"><img src="{{ url_for('static', filename='images/travel3.jpg') }}" alt=""/></div>
+        <div class="t-feat-overlay">
+          <span class="t-feat-label">Ancient Forest</span>
+          <span class="t-feat-location">Oregon</span>
+        </div>
+      </div>
+      <div class="t-feat-item">
+        <div class="t-feat-bg t-f4"><img src="{{ url_for('static', filename='images/travel4.jpg') }}" alt=""/></div>
+        <div class="t-feat-overlay">
+          <span class="t-feat-label">Pacific Storm</span>
+          <span class="t-feat-location">Iceland</span>
+        </div>
+      </div>
+      <div class="t-feat-item">
+        <div class="t-feat-bg t-f5"><img src="{{ url_for('static', filename='images/travel5.jpg') }}" alt=""/></div>
+        <div class="t-feat-overlay">
+          <span class="t-feat-label">Milky Way Rising</span>
+          <span class="t-feat-location">Utah</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="t-about" id="about">
+    <div class="t-about-inner">
+      <div class="t-about-img">
+        <img src="/static/images/travel6.jpg" alt="">
+      </div>
+      <div class="t-about-body">
+        <div class="t-about-tag">The Photographer</div>
+        <h2 class="t-about-title">Chasing <em>light</em> across the world for fifteen years.</h2>
+        <p>I'm Noah West — a travel and landscape photographer based between Austin, Texas and wherever the next photograph lives. I've shot on six continents, from the Icelandic highlands to the Atacama Desert, always searching for the moment when <strong>light transforms an ordinary place into something unforgettable</strong>.</p>
+        <p>My work has been published in National Geographic Traveler, Condé Nast, Outside Magazine, and licensed by tourism boards across four countries. I also offer limited edition fine art prints for collectors and interior designers.</p>
+        <div class="t-about-list">
+          <div class="t-about-list-item">Available for editorial and commercial assignments worldwide</div>
+          <div class="t-about-list-item">Limited edition prints shipped internationally</div>
+          <div class="t-about-list-item">Workshop leader — Texas and international workshops</div>
+          <div class="t-about-list-item">Sony Artisan of Imagery</div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Wall / Portfolio -->
+  <section class="t-wall">
+    <div class="t-wall-inner">
+      <div class="t-wall-header">
+        <h2 class="t-wall-title">Selected <em>Work</em></h2>
+        <div class="t-wall-filter">
+          <span class="t-filter-btn active">All</span>
+          <span class="t-filter-btn">Landscape</span>
+          <span class="t-filter-btn">Travel</span>
+          <span class="t-filter-btn">Night</span>
+        </div>
+      </div>
+      <div class="t-wall-grid">
+        <div class="t-wall-item tw1">
+          <img src="/static/images/travel7.jpg" alt="">
+        </div>
+        <div class="t-wall-item tw2"><img src="{{ url_for('static', filename='images/travel8.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw3"><img src="{{ url_for('static', filename='images/travel9.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw4"><img src="{{ url_for('static', filename='images/travel10.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw5"><img src="{{ url_for('static', filename='images/travel11.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw6"><img src="{{ url_for('static', filename='images/travel12.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw7"><img src="{{ url_for('static', filename='images/travel13.jpg') }}" alt=""/></div>
+        <div class="t-wall-item tw8"><img src="{{ url_for('static', filename='images/travel14.jpg') }}" alt=""/></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Print Shop -->
+  <section class="t-prints" id="prints">
+    <div class="t-prints-inner">
+      <div class="t-about-tag" style="color:rgba(232,228,220,0.35)">Fine Art Prints</div>
+      <h2 class="t-about-title" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,4vw,3rem);margin-bottom:0">Bring the World <em>Home.</em></h2>
+      <div class="t-prints-grid">
+        <div class="t-print-card">
+          <div class="t-print-size">12 × 18"</div>
+          <div class="t-print-name">Standard Edition</div>
+          <div class="t-print-desc">Archival pigment print on 300gsm fine art matte paper. Signed and numbered. Edition of 50 per image.</div>
+          <div><span class="t-print-price">From $180</span><a href="#contact" class="t-print-link">Inquire</a></div>
+        </div>
+        <div class="t-print-card">
+          <div class="t-print-size">24 × 36"</div>
+          <div class="t-print-name">Statement Edition</div>
+          <div class="t-print-desc">Museum-quality Hahnemühle Photo Rag paper. Signed, numbered, and accompanied by a certificate of authenticity. Edition of 25.</div>
+          <div><span class="t-print-price">From $380</span><a href="#contact" class="t-print-link">Inquire</a></div>
+        </div>
+        <div class="t-print-card">
+          <div class="t-print-size">40 × 60"</div>
+          <div class="t-print-name">Collector's Edition</div>
+          <div class="t-print-desc">Large-format acrylic face mount or aluminum dibond. Museum framing available. Signed, numbered. Edition of 10.</div>
+          <div><span class="t-print-price">From $1,200</span><a href="#contact" class="t-print-link">Inquire</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="t-contact" id="contact">
+    <div class="t-contact-inner">
+      <h2 class="t-contact-title">Let's <em>Talk.</em></h2>
+      <p class="t-contact-sub">For print inquiries, licensing, editorial assignments, or workshop bookings. I read and respond to every message personally.</p>
+      <div class="t-cf-row">
+        <div class="t-cf-group"><label>Name</label><input type="text" placeholder="Your name"/></div>
+        <div class="t-cf-group"><label>Email</label><input type="email" placeholder="your@email.com"/></div>
+      </div>
+      <div class="t-cf-group">
+        <label>Inquiry Type</label>
+        <select>
+          <option>Print Purchase</option>
+          <option>Editorial Licensing</option>
+          <option>Commercial Assignment</option>
+          <option>Workshop Booking</option>
+          <option>General Inquiry</option>
+        </select>
+      </div>
+      <div class="t-cf-group"><label>Message</label><textarea placeholder="Tell me about your project or what you're looking for..."></textarea></div>
+      <button class="t-cf-submit">Send Message →</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="t-footer">
+    <div class="t-footer-inner">
+      <div class="t-footer-brand">Atlas &amp; Light</div>
+      <div class="t-footer-links">
+        <a href="#gallery">Gallery</a>
+        <a href="#prints">Prints</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="https://instagram.com" target="_blank">Instagram</a>
+      </div>
+    </div>
+    <div class="t-footer-copy">
+      <p>© 2025 Atlas &amp; Light Photography · Noah West · Austin, Texas · This is a demo site · <a href="/portfolio" style="color:rgba(0,170,255,0.45)">Back to CRJ Portfolio</a></p>
+      <span class="crj-badge">Built by CRJ Web Solutions</span>
+    </div>
+  </footer>
+
+</body>
+</html>
+
